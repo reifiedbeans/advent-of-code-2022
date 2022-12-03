@@ -12,10 +12,12 @@ object Day03 {
 
     private fun getDuplicatedItem(itemSets: List<HashSet<Char>>): Char {
         val itemCounts = hashMapOf<Char, Int>()
-        itemSets.forEach { set -> set.forEach {
-            itemCounts.merge(it, 1, Int::plus)
-            if (itemCounts[it] == itemSets.size) return it
-        } }
+        itemSets.forEach { set ->
+            set.forEach {
+                itemCounts.merge(it, 1, Int::plus)
+                if (itemCounts[it] == itemSets.size) return it
+            }
+        }
         throw Exception("No duplicated item found")
     }
 
