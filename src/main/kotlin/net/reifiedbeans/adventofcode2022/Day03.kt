@@ -1,40 +1,39 @@
 package net.reifiedbeans.adventofcode2022
 
+private typealias Item = Char
+
 object Day03 {
-    private val Char.priority: Int
-        get() {
-            return if (this.isLowerCase()) {
-                this.code - 96
-            } else {
-                this.code - 38
+    data class Rucksack internal constructor(val compartments: Pair<Set<Item>, Set<Item>>) : Iterable<Item> {
+        companion object {
+            fun parse(s: String): Rucksack {
+                val compartments = s.chunked(s.length / 2)
+                    .map(String::toSet)
+                    .zipWithNext()
+                    .first()
+                return Rucksack(compartments)
             }
         }
 
-    private fun getDuplicatedItem(itemSets: List<HashSet<Char>>): Char {
-        val itemCounts = hashMapOf<Char, Int>()
-        itemSets.forEach { set ->
-            set.forEach {
-                itemCounts.merge(it, 1, Int::plus)
-                if (itemCounts[it] == itemSets.size) return it
-            }
-        }
-        throw Exception("No duplicated item found")
+        private val items = compartments.first union compartments.second
+
+        override fun iterator() = items.iterator()
     }
 
-    fun part1(input: List<String>): Int {
-        return input.sumOf { sack ->
-            sack.chunked(sack.length / 2)
-                .map { it.toHashSet() }
-                .let { getDuplicatedItem(it) }
-                .priority
+    private val Item.priority
+        get() = when (this) {
+            in 'a'..'z' -> this - 'a' + 1
+            in 'A'..'Z' -> this - 'A' + 27
+            else -> error("Invalid item: $this")
         }
-    }
 
-    fun part2(input: List<String>): Int {
-        return input.chunked(3).sumOf { group ->
-            getDuplicatedItem(group.map { it.toHashSet() }).priority
-        }
-    }
+    fun part1(input: List<String>) = input.map(Rucksack::parse)
+        .map(Rucksack::compartments)
+        .flatMap { (first, second) -> first intersect second }
+        .sumOf { it.priority }
+
+    fun part2(input: List<String>) = input.map(Rucksack::parse).chunked(3)
+        .flatMap { (first, second, third) -> first intersect second intersect third }
+        .sumOf { it.priority }
 }
 
 fun main() {

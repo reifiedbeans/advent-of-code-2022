@@ -1,16 +1,15 @@
 package net.reifiedbeans.adventofcode2022
 
 object Day02 {
-    class Game(private val opponentMove: Move, private val playerMove: Move) {
-        val score: Int
-            get() = playerMove.scoreAgainst(opponentMove)
+    data class Game(private val opponentMove: Move, private val playerMove: Move) {
+        private val outcome get() = playerMove.against(opponentMove)
+        val score get() = playerMove.value + this.outcome.score
     }
 
-    enum class Outcome(val value: Int) {
-        WIN(6),
-        DRAW(3),
-        DEFEAT(0),
-    }
+    sealed class Outcome(val score: Int)
+    object Win: Outcome(6)
+    object Draw: Outcome(3)
+    object Defeat: Outcome(0)
 
     sealed interface Move {
         val value: Int
@@ -18,18 +17,16 @@ object Day02 {
         val losingCountermove: Move
 
         fun against(other: Move) = when (other) {
-            winningCountermove -> Outcome.DEFEAT
-            losingCountermove -> Outcome.WIN
-            else -> Outcome.DRAW
+            this.winningCountermove -> Defeat
+            this.losingCountermove -> Win
+            else -> Draw
         }
 
-        fun moveForOutcome(outcome: Outcome) = when (outcome) {
-            Outcome.WIN -> winningCountermove
-            Outcome.DEFEAT -> losingCountermove
-            Outcome.DRAW -> this
+        fun countermoveFor(outcome: Outcome) = when (outcome) {
+            is Win -> this.winningCountermove
+            is Defeat -> this.losingCountermove
+            is Draw -> this
         }
-
-        fun scoreAgainst(other: Move) = value + against(other).value
     }
 
     object Rock : Move {
@@ -57,12 +54,12 @@ object Day02 {
                     "A", "X" -> Rock
                     "B", "Y" -> Paper
                     "C", "Z" -> Scissors
-                    else -> throw Exception("Invalid move")
+                    else -> error("Invalid move: $char")
                 }
             }
             Game(opponentMove, playerMove)
         }
-        return input.sumOf { parseGame(it).score }
+        return input.map(parseGame).sumOf(Game::score)
     }
 
     fun part2(input: List<String>): Int {
@@ -71,17 +68,18 @@ object Day02 {
                 'A' -> Rock
                 'B' -> Paper
                 'C' -> Scissors
-                else -> throw Exception("Invalid move: $move")
+                else -> error("Invalid move: $move")
             }
             val desiredOutcome = when (val outcome = string[2]) {
-                'X' -> Outcome.DEFEAT
-                'Y' -> Outcome.DRAW
-                'Z' -> Outcome.WIN
-                else -> throw Exception("Invalid outcome: $outcome")
+                'X' -> Defeat
+                'Y' -> Draw
+                'Z' -> Win
+                else -> error("Invalid outcome: $outcome")
             }
-            Game(opponentMove, opponentMove.moveForOutcome(desiredOutcome))
+            val playerMove = opponentMove.countermoveFor(desiredOutcome)
+            Game(opponentMove, playerMove)
         }
-        return input.sumOf { parseGame(it).score }
+        return input.map(parseGame).sumOf(Game::score)
     }
 }
 
