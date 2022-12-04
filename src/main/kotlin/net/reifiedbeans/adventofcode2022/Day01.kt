@@ -1,4 +1,5 @@
 package net.reifiedbeans.adventofcode2022
+
 object Day01 {
     private fun List<String>.sum() = this.sumOf(String::toInt)
 

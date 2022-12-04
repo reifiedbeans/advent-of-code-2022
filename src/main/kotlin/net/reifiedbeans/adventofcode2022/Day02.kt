@@ -7,9 +7,9 @@ object Day02 {
     }
 
     sealed class Outcome(val score: Int)
-    object Win: Outcome(6)
-    object Draw: Outcome(3)
-    object Defeat: Outcome(0)
+    object Win : Outcome(6)
+    object Draw : Outcome(3)
+    object Defeat : Outcome(0)
 
     sealed interface Move {
         val value: Int
