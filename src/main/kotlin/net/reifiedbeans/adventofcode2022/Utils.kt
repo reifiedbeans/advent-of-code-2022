@@ -2,9 +2,7 @@ package net.reifiedbeans.adventofcode2022
 
 import java.io.File
 
-fun readInput(name: String) = File("inputs", "$name.txt").readLines()
+fun getInput(name: String) = File("inputs", "$name.txt")
 
-fun readInputChunked(name: String, delimiter: String = "\n\n") = File("inputs", "$name.txt")
-    .readText()
-    .split("\n\n")
-    .map { it.lines() }
+fun File.readLinesChunked(delimiter: String = "\n\n") =
+    this.readText().trim('\n').split(delimiter).map(String::lines)
