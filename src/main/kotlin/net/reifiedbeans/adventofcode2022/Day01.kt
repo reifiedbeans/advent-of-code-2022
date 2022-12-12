@@ -9,7 +9,6 @@ private fun part2(input: List<List<String>>) = input.map { it.sum() }
     .take(3)
     .sum()
 
-
 fun main() {
     val testInput = getInput("Day01_test").readLinesChunked()
     check(part1(testInput) == 24000)

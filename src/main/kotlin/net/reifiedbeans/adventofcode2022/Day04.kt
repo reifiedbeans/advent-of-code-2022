@@ -17,7 +17,6 @@ private fun part1(input: List<String>) = input.map(::parseRanges)
 
 private fun part2(input: List<String>) = input.map(::parseRanges).count { it.first overlapsWith it.second }
 
-
 fun main() {
     val testInput = getInput("Day04_test").readLines()
     check(part1(testInput) == 2)

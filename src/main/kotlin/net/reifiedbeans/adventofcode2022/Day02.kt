@@ -81,7 +81,6 @@ private fun part2(input: List<String>): Int {
     return input.map(parseGame).sumOf(Game::score)
 }
 
-
 fun main() {
     val testInput = getInput("Day02_test").readLines()
     check(part1(testInput) == 15)
