@@ -10,7 +10,7 @@ private sealed interface Node {
 
 private class Directory(
     override val parent: Directory?,
-    val children: HashMap<String, Node> = hashMapOf()
+    val children: HashMap<String, Node> = hashMapOf(),
 ) : Node {
     override val size: Int
         get() = children.values.sumOf(Node::size)

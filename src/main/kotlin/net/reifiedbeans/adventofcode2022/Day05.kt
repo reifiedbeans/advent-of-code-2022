@@ -78,7 +78,6 @@ private fun part2(input: List<String>) = Ship.from(input)
     .apply { executeOperations(canMoveMultipleAtOnce = true) }
     .topCrates()
 
-
 fun main() {
     val testInput = getInput("Day05_test").readLines()
     check(part1(testInput) == "CMZ")

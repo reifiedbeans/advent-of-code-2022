@@ -1,5 +1,8 @@
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
+
 plugins {
     kotlin("jvm") version "1.8.20"
+    id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
 }
 
 group = "net.reifiedbeans"
@@ -11,4 +14,8 @@ repositories {
 
 kotlin {
     jvmToolchain(11)
+}
+
+configure<KtlintExtension> {
+    version.set("0.48.2")
 }
