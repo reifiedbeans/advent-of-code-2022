@@ -3,11 +3,17 @@ package net.reifiedbeans.adventofcode2022
 import kotlin.math.abs
 
 private object Day09 {
-    private sealed class Direction
-    private object Left : Direction()
-    private object Right : Direction()
-    private object Down : Direction()
-    private object Up : Direction()
+    private class Move(val dx: Int, val dy: Int) {
+        companion object {
+            fun from(direction: String) = when (direction) {
+                "L" -> Move(-1, 0) // Left
+                "R" -> Move(1, 0) // Right
+                "D" -> Move(0, -1) // Down
+                "U" -> Move(0, 1) // Up
+                else -> error("Unknown direction $direction")
+            }
+        }
+    }
 
     private class Knot {
         private val _visitedPositions = mutableSetOf<Pair<Int, Int>>()
@@ -22,24 +28,18 @@ private object Day09 {
         fun visit(x: Int, y: Int) {
             this.x = x
             this.y = y
-            this._visitedPositions.add(Pair(x, y))
+            this._visitedPositions += Pair(x, y)
         }
     }
 
-    private class RopeBridge(val moves: List<Direction>) {
+    private class RopeBridge(val moves: List<Move>) {
         companion object {
             fun parse(input: List<String>): RopeBridge {
                 val moves = input.map {
                     val parts = it.split(" ")
-                    val direction = when (val d = parts.first()) {
-                        "L" -> Left
-                        "R" -> Right
-                        "D" -> Down
-                        "U" -> Up
-                        else -> error("Unexpected direction $d")
-                    }
+                    val direction = parts.first()
                     val steps = parts.last().toInt()
-                    List(steps) { direction }
+                    List(steps) { Move.from(direction) }
                 }.flatten()
 
                 return RopeBridge(moves)
@@ -51,16 +51,10 @@ private object Day09 {
             val rope = List(ropeLength) { Knot().apply { visit(0, 0) } }
             val head = rope.first()
 
-            for (direction in this.moves) {
+            for (move in this.moves) {
                 val hx = head.x
                 val hy = head.y
-
-                when (direction) {
-                    Left -> head.visit(hx - 1, hy)
-                    Right -> head.visit(hx + 1, hy)
-                    Down -> head.visit(hx, hy - 1)
-                    Up -> head.visit(hx, hy + 1)
-                }
+                head.visit(hx + move.dx, hy + move.dy)
 
                 for ((leader, follower) in rope.windowed(2)) {
                     val dx = leader.x - follower.x
